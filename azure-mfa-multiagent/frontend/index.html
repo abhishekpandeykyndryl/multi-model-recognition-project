@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Azure MFA Demo</title>
+  <style>body{font-family:system-ui,Segoe UI,Roboto,Arial;padding:20px}</style>
+</head>
+<body>
+  <h2>Azure MFA Demo</h2>
+  <section>
+    <h3>Register</h3>
+    <input id="email" placeholder="email"><br>
+    <input id="password" type="password" placeholder="password"><br>
+    <button id="btn-register">Register</button>
+  </section>
+
+  <section>
+    <h3>Face Enrollment</h3>
+    <video id="cam" autoplay playsinline width="320" height="240"></video><br>
+    <button id="cap-face">Capture & Enroll Face</button>
+  </section>
+
+  <section>
+    <h3>Voice Enrollment</h3>
+    <button id="rec-voice">Record Voice (4s)</button>
+  </section>
+
+  <section>
+    <h3>Login (password + face/voice)</h3>
+    <input id="email-login" placeholder="email"><br>
+    <input id="password-login" type="password" placeholder="password"><br>
+    <button id="login-face">Login with Face</button>
+    <button id="login-voice">Login with Voice</button>
+  </section>
+
+<script src="recorder.js"></script>
+<script>
+const apiBase = location.origin.replace(/:\d+$/,':8080') // adjust if backend runs elsewhere
+// register
+document.getElementById('btn-register').onclick = async ()=> {
+  const email = document.getElementById('email').value
+  const password = document.getElementById('password').value
+  const r = await fetch(`${apiBase}/register`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password})})
+  alert(await r.text())
+}
+
+// camera stream
+const vid = document.getElementById('cam')
+navigator.mediaDevices.getUserMedia({video:true, audio:false}).then(s=>vid.srcObject=s).catch(e=>console.error(e))
+
+async function captureImageBlob(){
+  const c = document.createElement('canvas')
+  c.width = vid.videoWidth || 320; c.height = vid.videoHeight || 240
+  c.getContext('2d').drawImage(vid,0,0,c.width,c.height)
+  const blob = await new Promise(r=>c.toBlob(r,'image/jpeg',0.85))
+  return blob
+}
+
+// Capture & enroll face
+document.getElementById('cap-face').onclick = async ()=> {
+  const email = document.getElementById('email').value
+  const blob = await captureImageBlob()
+  const fd = new FormData(); fd.append('email', email); fd.append('file', blob, 'face.jpg')
+  const r = await fetch(`${apiBase}/enroll/face`, {method:'POST', body: fd})
+  alert(await r.text())
+}
+
+// recorder helper functions (see recorder.js)
+</script>
+</body>
+</html>
