@@ -1,0 +1,3 @@
+# requirements.txt (root)
+-r backend_fastapi/requirements.txt
+-r backend_flask/requirements.txt
