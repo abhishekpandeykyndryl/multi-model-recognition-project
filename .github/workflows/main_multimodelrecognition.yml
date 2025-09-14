@@ -26,14 +26,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f ./backend_fastapi/requirements.txt ]; then pip install -r ./backend_fastapi/requirements.txt; fi
-          if [ -f ./backend_flask/requirements.txt ]; then pip install -r ./backend_flask/requirements.txt; fi
+          if [ -f ./azure-mfa-multiagent/backend_fastapi/requirements.txt ]; then pip install -r ./azure-mfa-multiagent/backend_fastapi/requirements.txt; fi
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: .
+          path: ./azure-mfa-multiagent/backend_fastapi  # ✅ Correct folder uploaded
 
   deploy:
     runs-on: ubuntu-latest
@@ -53,9 +52,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Show folder structure (debug)
+        run: |
+          echo "Listing current directory contents:"
+          ls -R .
+
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'Multimodelrecognition'
           slot-name: 'Production'
-          package: .  # ✅ DEPLOY ONLY THIS FOLDER
+          package: .  # ✅ Deploy artifact folder downloaded above
