@@ -58,5 +58,4 @@ jobs:
         with:
           app-name: 'Multimodelrecognition'
           slot-name: 'Production'
-          package: ./backend_fastapi  # ✅ DEPLOY ONLY THIS FOLDER
-          enable-oryx-build: true     # ✅ LET AZURE INSTALL DEPENDENCIES
+          package: .  # ✅ DEPLOY ONLY THIS FOLDER
