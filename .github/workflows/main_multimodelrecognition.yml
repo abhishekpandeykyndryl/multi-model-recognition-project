@@ -36,32 +36,32 @@ jobs:
         path: .
 
   deploy:
-    runs-on: ubuntu-latest
-    needs: build-and-deploy
-    environment:
-      name: 'Production'
+  runs-on: ubuntu-latest
+  needs: build-and-deploy
+  environment:
+    name: 'Production'
 
-    steps:
-    - name: Download artifact from build job
-      uses: actions/download-artifact@v4
-      with:
-        name: python-app
-        path: .
+  steps:
+  - name: Download artifact from build job
+    uses: actions/download-artifact@v4
+    with:
+      name: python-app
+      path: .
 
-    # ✅ NEW STEP: Azure Login using AZURE_CREDENTIALS secret
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+  - name: Azure Login
+    uses: azure/login@v1
+    with:
+      creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # ✅ Deploy using logged-in credentials
-    - name: Deploy to Azure WebApp
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'Multimodelrecognition'
-        slot-name: 'Production'
-        package: .
-        enable-oryx-build: false  # ✅ Disable remote Oryx build
+  - name: Deploy to Azure WebApp
+    uses: azure/webapps-deploy@v2
+    with:
+      app-name: 'Multimodelrecognition'
+      slot-name: 'Production'
+      package: ./backend_fastapi  # ✅ DEPLOY ONLY THIS FOLDER
+      enable-oryx-build: true     # ✅ LET AZURE INSTALL DEPENDENCIES
+
+
 
 
 
