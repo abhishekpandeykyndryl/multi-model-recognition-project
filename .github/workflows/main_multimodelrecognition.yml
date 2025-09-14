@@ -61,14 +61,8 @@ jobs:
         app-name: 'Multimodelrecognition'
         slot-name: 'Production'
         package: .
-
-    - name: Deploy to Azure WebApp
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'Multimodelrecognition'
-        slot-name: 'Production'
-        package: .
         enable-oryx-build: false  # ✅ Disable remote Oryx build
+
 
 
 
