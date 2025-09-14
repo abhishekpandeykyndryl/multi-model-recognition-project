@@ -40,6 +40,7 @@ jobs:
     needs: build-and-deploy
     environment:
       name: 'Production'
+
     steps:
     - name: Download artifact from build job
       uses: actions/download-artifact@v4
@@ -47,9 +48,18 @@ jobs:
         name: python-app
         path: .
 
-    - name: 'Deploy to Azure WebApp'
+    # ✅ NEW STEP: Azure Login using AZURE_CREDENTIALS secret
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # ✅ Deploy using logged-in credentials
+    - name: Deploy to Azure WebApp
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'Multimodelrecognition'  # Your Azure App Service name
+        app-name: 'Multimodelrecognition'
         slot-name: 'Production'
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+        package: .
+
+
